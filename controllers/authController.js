@@ -15,7 +15,7 @@ const sendData = (message, state, data = {}) => {
 //獲得所有會員資訊
 const getUser = async (req, res) => {
   try {
-    let userFound = await User.find({}).exec();
+    const userFound = await User.find({}).exec();
     return res.send(sendData({}, "0", userFound));
   } catch (e) {
     console.log(e);
@@ -26,7 +26,7 @@ const getUser = async (req, res) => {
 //註冊
 const register = async (req, res) => {
   //確認數據是否符合規範(joi)
-  let { error } = registerValidation(req.body);
+  const { error } = registerValidation(req.body);
   if (error) {
     return res.status(400).send(sendData(error.details[0].message, "1"));
   }
@@ -38,9 +38,9 @@ const register = async (req, res) => {
       .send(sendData("此信箱已被註冊，請使用登入系統...", "1"));
   //製作新用戶
   let { username, email, password, role } = req.body;
-  let newUser = new User({ username, email, password, role });
+  const newUser = new User({ username, email, password, role });
   try {
-    let saveUser = await newUser.save();
+    const saveUser = await newUser.save();
     return res.send(sendData("註冊成功！", "0", saveUser));
   } catch (e) {
     return res.status(500).send(sendData("註冊失敗...", "1"));
@@ -50,7 +50,7 @@ const register = async (req, res) => {
 //登入
 const login = async (req, res) => {
   //確認數據是否符合規範(joi)
-  let { error } = loginValidation(req.body);
+  const { error } = loginValidation(req.body);
   if (error)
     return res.status(400).send(sendData(error.details[0].message, "1"));
   //確認信箱是否有註冊過

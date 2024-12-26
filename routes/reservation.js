@@ -20,10 +20,10 @@ const sendData = (message, state, data = {}) => {
 //用reservationId、sportID、venueID獲得各項資訊，或直接搜尋所有資料
 // 合併的 API
 router.get("/reservations", async (req, res) => {
-  let { _id, sportId, venueId } = req.query;
+  const { _id, sportId, venueId } = req.query;
 
   // 構建查詢條件
-  let query = {};
+  const query = {};
 
   if (_id) {
     query._id = _id;
@@ -60,7 +60,7 @@ router.post("/", async (req, res) => {
   console.log(req.body);
 
   //驗證數據符合規範(Joi)
-  let { error } = reservationValidation(req.body);
+  const { error } = reservationValidation(req.body);
   if (error)
     return res.status(400).send(sendData(error.details[0].message, "1"));
   //身份驗證
@@ -72,10 +72,10 @@ router.post("/", async (req, res) => {
       );
   }
   //新增場館及運動項目
-  let { venueId, sportId, maxUser } = req.body;
+  const { venueId, sportId, maxUser } = req.body;
   try {
-    let newResveration = new Reservation({ venueId, sportId, maxUser });
-    let saveReservation = await newResveration.save();
+    const newResveration = new Reservation({ venueId, sportId, maxUser });
+    const saveReservation = await newResveration.save();
     return res.send(sendData("場館及運動項目已綁定！", "0", saveReservation));
   } catch (e) {
     console.log(e);
@@ -85,17 +85,17 @@ router.post("/", async (req, res) => {
 
 //(前台)用userId尋找預約過的項目(ok)
 router.get("/user/:_user_id", async (req, res) => {
-  let { _user_id } = req.params;
+  const { _user_id } = req.params;
   // console.log(req.params);
-  let reservationFound = await Reservation.find({ user: _user_id }).exec();
+  const reservationFound = await Reservation.find({ user: _user_id }).exec();
   return res.send(sendData({}, "0", reservationFound));
 });
 
 //(前台)讓user透過reservationId預約(ok)
 router.post("/enroll/:_id", async (req, res) => {
-  let { _id } = req.params;
+  const { _id } = req.params;
   try {
-    let reservation = await Reservation.findOne({ _id }).exec();
+    const reservation = await Reservation.findOne({ _id }).exec();
     //檢查人數是否到達maxUser
     if (reservation.user.length >= reservation.maxUser) {
       return res.status(400).send(sendData("預約已滿，無法再預約", "1"));
@@ -113,20 +113,20 @@ router.post("/enroll/:_id", async (req, res) => {
 //修改 場館-運動項目(ok)
 router.patch("/:_id", async (req, res) => {
   //驗證數據符合規範(Joi)
-  let { error } = reservationValidation(req.body);
+  const { error } = reservationValidation(req.body);
   if (error)
     return res.status(400).send(sendData(error.details[0].message, "1"));
 
-  let { _id } = req.params;
+  const { _id } = req.params;
   try {
     //確認存在
-    let reservationFound = await Reservation.findOne({ _id }).exec();
+    const reservationFound = await Reservation.findOne({ _id }).exec();
     if (!reservationFound) {
       return res.status(400).send(sendData("項目不存在，無法修改內容...", "1"));
     }
     //身份驗證
     if (req.user.isAdmin()) {
-      let updateReservation = await Reservation.findOneAndUpdate(
+      const updateReservation = await Reservation.findOneAndUpdate(
         { _id },
         req.body,
         {
@@ -147,10 +147,10 @@ router.patch("/:_id", async (req, res) => {
 
 //刪除 場館-運動項目(ok)
 router.delete("/:_id", async (req, res) => {
-  let { _id } = req.params;
+  const { _id } = req.params;
   try {
     //確認場館存在
-    let reservationFound = await Reservation.findOne({ _id }).exec();
+    const reservationFound = await Reservation.findOne({ _id }).exec();
     if (!reservationFound)
       return res.status(400).send(sendData("無此場館及項目，無法刪除...", "1"));
     //身份驗證

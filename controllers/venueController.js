@@ -13,7 +13,7 @@ const sendData = (message, state, data = {}) => {
 //獲得所有場館資訊
 const getVenue = async (req, res) => {
   try {
-    let venueFound = await Venue.find({}).exec();
+    const venueFound = await Venue.find({}).exec();
     return res.send(sendData({}, "0", venueFound));
   } catch (e) {
     return res.status(500).send(sendData(e, "1"));
@@ -23,7 +23,7 @@ const getVenue = async (req, res) => {
 //新增場館
 const addVenue = async (req, res) => {
   //驗證數據符合規範
-  let { error } = venueValidation(req.body);
+  const { error } = venueValidation(req.body);
   if (error)
     return res
       .status(400)
@@ -37,8 +37,8 @@ const addVenue = async (req, res) => {
   //新增
   let { venueName, address } = req.body;
   try {
-    let newVenue = new Venue({ venueName, address });
-    let saveVenue = await newVenue.save();
+    const newVenue = new Venue({ venueName, address });
+    const saveVenue = await newVenue.save();
     return res.send(sendData("新場館已保存！", "0", saveVenue));
   } catch (e) {
     console.log(e);
@@ -49,22 +49,22 @@ const addVenue = async (req, res) => {
 //修改場館資訊
 const editVenue = async (req, res) => {
   //驗證數據符合規範
-  let { error } = venueValidation(req.body);
+  const { error } = venueValidation(req.body);
   if (error)
     return res
       .status(400)
       .send(sendData(error.details[0].message || "驗證失敗", "1"));
 
-  let { _id } = req.params;
+  const { _id } = req.params;
   try {
     //確認場館存在
-    let venueFound = await Venue.findOne({ _id }).exec();
+    const venueFound = await Venue.findOne({ _id }).exec();
     if (!venueFound) {
       return res.status(400).send(sendData("場館不存在，無法修改內容...", "1"));
     }
     //身份驗證
     if (req.user.isAdmin()) {
-      let updateVenue = await Venue.findOneAndUpdate({ _id }, req.body, {
+      const updateVenue = await Venue.findOneAndUpdate({ _id }, req.body, {
         new: true,
         runValidators: true,
       });
@@ -81,10 +81,10 @@ const editVenue = async (req, res) => {
 
 //刪除場館資料
 const deletVenue = async (req, res) => {
-  let { _id } = req.params;
+  const { _id } = req.params;
   try {
     //確認場館存在
-    let venueFound = await Venue.findOne({ _id }).exec();
+    const venueFound = await Venue.findOne({ _id }).exec();
     if (!venueFound)
       return res.status(400).send(sendData("無此場館，無法刪除...", "1"));
     //身份驗證
